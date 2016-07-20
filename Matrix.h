@@ -60,7 +60,7 @@ public:
 			error("row", "index out of bounds");
 		}
 
-		Matrix<T> ret(1, width);
+		Matrix<T> ret(width, 1);
 	
 		for (int i = 0; i < width; ++i) {
 			ret.at(0, i) = this->at(r, i);
@@ -74,7 +74,7 @@ public:
 			error("col", "index out of bounds");
 		}
 
-		Matrix<T> ret(height, 1);
+		Matrix<T> ret(1, height);
 
 		for (int i = 0; i < height; ++i) {
 			ret.at(i, 0) = this->at(i, c);
@@ -83,7 +83,11 @@ public:
 		return ret;
 	}
 
-	Matrix<T> zeroPad(int pad) {
+	Matrix<T> zero_pad(int pad) {
+		if (pad <= 0) {
+			error("zero_pad", "pad amount must be a nonzero positive int");
+		}
+
 		Matrix<T> ret(width + 2*pad, height + 2*pad);
 	
 		for (int i = 0; i < height; ++i) {
@@ -113,8 +117,7 @@ public:
 		return ret;
 	}
 
-	// matrix multiply
-	Matrix<T> mul(Matrix<T>& o) {
+	Matrix<T> mat_multiply(Matrix<T>& o) {
 		if (this->width != o.height) {
 			error("mul", "matrix width and height must match");
 		}
@@ -137,29 +140,29 @@ public:
 	}
 
 	Matrix<T> convolve(Matrix<T> filter, int stride = 1) {
-		int fw = filter.getWidth();
+		int fw = filter.get_width();
 		
-		if (fw != filter.getHeight()) {
+		if (fw != filter.get_height()) {
 			error("convolve", "only square filters supported");
 		} else if (fw % 2 != 1) {
 			error("convolve", "only odd filter sizes supported");
 		}
 
 		int pad = fw / 2;
-		Matrix<T> input = this->zeroPad(pad);
+		Matrix<T> input = this->zero_pad(pad);
 		Matrix<T> ret( ((width-1)/stride) + 1, ((height-1)/stride) + 1 );
 
-		for (int i = 0; i < ret.getHeight(); ++i) {
-			for (int j = 0; j < ret.getWidth(); ++j) {
+		for (int i = 0; i < ret.get_height(); ++i) {
+			for (int j = 0; j < ret.get_width(); ++j) {
 				Matrix<T> isub = input.submat(stride * i, stride * j, fw, fw);
-				ret.at(i,j) = (isub * filter).sumAll();
+				ret.at(i,j) = (isub * filter).sum_all();
 			}
 		}
 
 		return ret;
 	}
 
-	T sumAll() {
+	T sum_all() {
 		T sum = 0;
 		for (int i = 0; i < width * height; ++i) {
 			sum += data[i];
@@ -198,6 +201,10 @@ public:
 			if (this->at(i) != o.at(i)) return false;
 		}
 		return true;
+	}
+
+	bool operator!=(Matrix<T>& o) {
+		return !(*this == o);
 	}
 
 	Matrix<T> operator+(Matrix<T>& o) {
