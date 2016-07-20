@@ -16,9 +16,12 @@ void error(std::string type, std::string msg) {
 template <class T>
 class Matrix {
 public:
-	Matrix() : data(0) {}
+	Matrix() : width(0), height(0), data(0) {}
 
 	Matrix(int width, int height, T val = 0) : width(width), height(height) {
+		if (width <= 0 || height <= 0) {
+			error("ctor", "width and height must be nonzero positives");
+		}
 		data = new T[width * height];
 		for (int i = 0; i < width * height; ++i) data[i] = val;
 	}
@@ -34,8 +37,9 @@ public:
 		if (data) delete[] data;
 	}
 
-	int getHeight() { return height; }
-	int getWidth() { return width; }
+	int get_height() { return height; }
+	int get_width() { return width; }
+	T* get_data() { return data; }
 
 	T& at(int e) {
 		if (!data) {
@@ -186,6 +190,14 @@ public:
 				this->at(i,j) = o.at(i,j);
 			}
 		}
+	}
+
+	bool operator==(Matrix<T>& o) {
+		if (this->width != o.width || this->height != o.height) return false;
+		for (int i = 0; i < this->width * this->height; ++i) {
+			if (this->at(i) != o.at(i)) return false;
+		}
+		return true;
 	}
 
 	Matrix<T> operator+(Matrix<T>& o) {
