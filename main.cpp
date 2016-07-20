@@ -1,13 +1,16 @@
 #include <iostream>
 #include <conio.h>
 #include "Matrix.h"
+#include "MatrixTester.h"
 
 using namespace mtx;
 typedef Matrix<double> Mat;
 
 int main(int argc, char** argv) {
 
-	Mat z(10, 10, 1);
+	tester::run_all_tests();
+
+	/*Mat z(10, 10, 1);
 	for (int i = 0; i < 100; ++i) z.at(i) = i % 10;
 	z.print(1);
 
@@ -19,7 +22,7 @@ int main(int argc, char** argv) {
 	filter.at(1, 1) = 5;
 	filter.print(1);
 
-	z.convolve(filter, 2).print();
+	z.convolve(filter, 2).print(1);
 
 	Mat m(4, 4, 1);
 	Mat mm(4, 4, 2);
@@ -29,6 +32,13 @@ int main(int argc, char** argv) {
 	Mat a(4,4);
 	Mat e(16,1);
 	Mat f(3, 1);
+
+	Mat zz(z);
+
+	Mat t, tt;
+
+	std::cout << (z == zz) << std::endl;
+	std::cout << (t == tt) << std::endl;
 
 	for (int i = 0; i < 16; ++i) {
 		a.at(i / 4, i % 4) = i;
